@@ -1,83 +1,93 @@
 script "init" {
-  name        = "Terraform Init"
+  name        = "OpenTofu Init"
   description = "Download the required provider plugins and modules and set up the backend"
 
   job {
     commands = [
-      ["terraform", "init", "-lock-timeout=5m"],
+      ["tofu", "init", "-lock-timeout=5m"],
     ]
   }
 }
 
 script "preview" {
-  name        = "Terraform Deployment Preview"
-  description = "Create a preview of Terraform changes and synchronize it to Terramate Cloud"
+  name        = "OpenTofu Deployment Preview"
+  description = "Create a preview of OpenTofu changes and synchronize it to Terramate Cloud"
 
   job {
     commands = [
-      ["terraform", "validate"],
-      ["terraform", "plan", "-out", "out.tfplan", "-detailed-exitcode", "-lock=false", {
+      ["tofu", "validate"],
+      ["tofu", "plan", "-out", "out.tfplan", "-detailed-exitcode", "-lock=false", {
         sync_preview   = true
         tofu_plan_file = "out.tfplan"
+        mock_on_fail   = true,
+        enable_sharing = true,
       }],
     ]
   }
 }
 
 script "deploy" {
-  name        = "Terraform Deployment"
-  description = "Run a full Terraform deployment cycle and synchronize the result to Terramate Cloud"
+  name        = "OpenTofu Deployment"
+  description = "Run a full OpenTofu deployment cycle and synchronize the result to Terramate Cloud"
 
   job {
     commands = [
-      ["terraform", "validate"],
-      ["terraform", "plan", "-out", "out.tfplan", "-lock=false"],
-      ["terraform", "apply", "-input=false", "-auto-approve", "-lock-timeout=5m", "out.tfplan", {
+      ["tofu", "validate"],
+      ["tofu", "plan", "-out", "out.tfplan", "-lock=false", {
+        mock_on_fail   = true,
+        enable_sharing = true,
+      }],
+      ["tofu", "apply", "-input=false", "-auto-approve", "-lock-timeout=5m", "out.tfplan", {
         sync_deployment = true
         tofu_plan_file  = "out.tfplan"
+        mock_on_fail    = true,
+        enable_sharing  = true,
       }],
     ]
   }
 }
 
 script "drift" "detect" {
-  name        = "Terraform Drift Check"
-  description = "Detect drifts in Terraform configuration and synchronize it to Terramate Cloud"
+  name        = "OpenTofu Drift Check"
+  description = "Detect drifts in OpenTofu configuration and synchronize it to Terramate Cloud"
 
   job {
     commands = [
-      ["terraform", "plan", "-out", "out.tfplan", "-detailed-exitcode", "-lock=false", {
+      ["tofu", "plan", "-out", "out.tfplan", "-detailed-exitcode", "-lock=false", {
         sync_drift_status = true
         tofu_plan_file    = "out.tfplan"
+        mock_on_fail      = true,
+        enable_sharing    = true,
       }],
     ]
   }
 }
 
 script "drift" "reconcile" {
-  name        = "Terraform Drift Reconciliation"
+  name        = "OpenTofu Drift Reconciliation"
   description = "Reconcile drifts in all changed stacks"
 
   job {
     commands = [
-      ["terraform", "apply", "-input=false", "-auto-approve", "-lock-timeout=5m", "drift.tfplan", {
+      ["tofu", "apply", "-input=false", "-auto-approve", "-lock-timeout=5m", "drift.tfplan", {
         sync_deployment = true
         tofu_plan_file  = "drift.tfplan"
+        mock_on_fail    = true,
+        enable_sharing  = true,
       }],
-
     ]
   }
 }
 
-script "terraform" "render" {
-  name        = "Terraform Show Plan"
-  description = "Render an Terraform plan"
+script "tofu" "render" {
+  name        = "OpenTofu Show Plan"
+  description = "Render an OpenTofu plan"
 
   job {
     commands = [
       ["echo", "Stack: `${terramate.stack.path.absolute}`"],
       ["echo", "```terraform"],
-      ["terraform", "show", "-no-color", "out.tfplan"],
+      ["tofu", "show", "-no-color", "out.tfplan"],
       ["echo", "```"],
     ]
   }
