@@ -19,6 +19,9 @@ script "preview" {
       ["terraform", "plan", "-out", "out.tfplan", "-detailed-exitcode", "-lock=false", {
         sync_preview   = true
         tofu_plan_file = "out.tfplan"
+        enable-sharing = true
+        mock-on-fail   = true
+
       }],
     ]
   }
@@ -35,6 +38,8 @@ script "deploy" {
       ["terraform", "apply", "-input=false", "-auto-approve", "-lock-timeout=5m", "out.tfplan", {
         sync_deployment = true
         tofu_plan_file  = "out.tfplan"
+        enable-sharing  = true
+        mock-on-fail    = true
       }],
     ]
   }
@@ -49,6 +54,8 @@ script "drift" "detect" {
       ["terraform", "plan", "-out", "out.tfplan", "-detailed-exitcode", "-lock=false", {
         sync_drift_status = true
         tofu_plan_file    = "out.tfplan"
+        enable-sharing    = true
+        mock-on-fail      = true
       }],
     ]
   }
@@ -63,6 +70,8 @@ script "drift" "reconcile" {
       ["terraform", "apply", "-input=false", "-auto-approve", "-lock-timeout=5m", "drift.tfplan", {
         sync_deployment = true
         tofu_plan_file  = "drift.tfplan"
+        enable-sharing  = true
+        mock-on-fail    = true
       }],
 
     ]

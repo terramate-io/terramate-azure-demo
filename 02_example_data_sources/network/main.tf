@@ -1,6 +1,6 @@
 provider "azurerm" {
+  skip_provider_registration = false
   features {}
-
 }
 
 resource "azurerm_resource_group" "main" {

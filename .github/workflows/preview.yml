@@ -36,7 +36,9 @@ jobs:
       - name: Install Terraform with asdf
         run: |
           asdf plugin add terraform
+          asdf plugin add opentofu
           asdf install terraform
+          asdf install opentofu
 
       ### Linting
 
@@ -54,18 +56,18 @@ jobs:
 
       ### Configure cloud credentials
 
-      - name: 'Configure Azure credentials'
-        if: steps.list-changed.outputs.stdout
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # - name: 'Configure Azure credentials'
+      #   if: steps.list-changed.outputs.stdout
+      #   uses: azure/login@v2
+      #   with:
+      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Verify Azure credentials
-        if: steps.list-changed.outputs.stdout
-        run: |
-          az account show
+      # - name: Verify Azure credentials
+      #   if: steps.list-changed.outputs.stdout
+      #   run: |
+      #     az account show
 
       ### Run the Terraform preview via Terramate in each changed stack
 
@@ -87,6 +89,8 @@ jobs:
         if: steps.list-changed.outputs.stdout
         run: |
           terramate script run \
+            --enable-sharing \
+            --mock-on-fail \
             --changed \
             --parallel 5 \
             --continue-on-error \

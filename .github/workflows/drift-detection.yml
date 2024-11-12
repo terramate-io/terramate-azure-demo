@@ -39,7 +39,9 @@ jobs:
       - name: Install Terraform with asdf
         run: |
           asdf plugin add terraform
+          asdf plugin add opentofu
           asdf install terraform
+          asdf install opentofu
 
       ### Configure cloud credentials
       
@@ -74,6 +76,8 @@ jobs:
         id: drift-detect
         run: |
           terramate script run \
+            --enable-sharing \
+            --mock-on-fail \
             --parallel 5 \
             --continue-on-error \
             -- \
@@ -89,6 +93,8 @@ jobs:
         id: drift-reconcile
         run: |
           terramate script run \
+            --enable-sharing \
+            --mock-on-fail \
             --tags reconcile \
             --status=drifted \
             --parallel 5 \

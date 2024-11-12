@@ -36,7 +36,9 @@ jobs:
       - name: Install Terraform with asdf
         run: |
           asdf plugin add terraform
+          asdf plugin add opentofu
           asdf install terraform
+          asdf install opentofu
 
       ### Check for changed stacks
 
@@ -79,6 +81,8 @@ jobs:
         if: steps.list-changed.outputs.stdout
         run: |
           terramate script run \
+            --enable-sharing \
+            --mock-on-fail \
             --parallel 5 \
             --changed \
             deploy
@@ -93,6 +97,8 @@ jobs:
         if: steps.list-changed.outputs.stdout && ! cancelled() && steps.deploy.outcome != 'skipped'
         run: |
           terramate script run \
+            --enable-sharing \
+            --mock-on-fail \
             --parallel 5 \
             --changed \
             drift detect
