@@ -1,4 +1,54 @@
-FEATURES
+# Features
+
+- Composable Stacks
+  - Smaller, composable state files that can be deployed isolated and in parallel
+  - Smaller Blast radius
+  -  Ownership model / governance
+  - Natural ordering using the filesystem / filetree hierarchy
+  - Supports Terraform, OpenTofu and Terragrunt
+  - Supports all patterns: workspaces, partial backend, tfenv, blabla
+
+- Code Generation
+  - Reduce code maintenance DRY
+  - Declare and reuse data throughout the stack hierarchy (manage module versions, provider versions, etc - programmatically)
+
+- Zero-Config Orchestration
+  - Zero Config Orchestration using implicit configurations
+  - Unlimited concurrency at no additional costs
+  - Fast run-times and parallelization via change detection
+  - Custom workflows
+
+- Observability & Visibility 
+  - Pull Requests & Deployment Logs (especially when using parallelization)
+ - Detect and remediate security vulnerabilities
+ - Drift Detection and Remediation Reconciliation
+
+- Incident Management & Alerts
+  - Slack Bot Integration to notify individuals and teams for failed deployments and drift, assign and manage those events as incidents
+
+- Asset Management / CMDB
+  - Understand all managed infrastructure among all teams, all repositories, all cloud accounts
+  - Detect CIS Benchmark violations
+
+# Benefits
+
+- Better Collaboration (e.g. though alerts)
+- No waiting times (e.g. though parallelization and change detection)
+- No duplication of your CI/CD stack
+
+# USPs
+
+- Highly secure - Doesn't require access to cloud accounts or state
+- Highly performant (unlimited concurrency, reuse your CI/CD, change detection)
+- Supports workspaces, directories, terragrunt, tfenv, partial backend configuration and all other
+- 0 migration effort, any existing infrastructure can be onboarded
+- 0 lock-in, can be offboarded at any point of time without breaking your environment
+
+
+# Examples
+
+- Using outputs sharing via code generation `01_exmaple_outputs`
+- Using data sources `02_exmaple_data_sources` (this is simpler and doesn't require any code generation)
 
 ## Start from scratch
 
@@ -12,7 +62,8 @@ FEATURES
 - Create `terramate.tm.hcl` as mentioned below to configure the project
 - Start deploying / syncing operations
 
-## Start with the fork
+
+## Start with Examples
 
 - Clone the fork/updated code https://github.com/soerenmartius/terramate-azure-demo
 - Login to your azure account `az login` and select a subscription
@@ -64,7 +115,7 @@ terramate {
 }
 ```
 
-## Stacks Basics
+### Stacks Basics
 
 Stacks are a at the most basic form just a directory with a `stack.tm.hcl`. They are used to group infrastructure code, configuratin and state (often managed remote) and can be executed in an isolated manner.
 
@@ -77,7 +128,7 @@ network/
 
 Or by using `before` and `after` to configure the [explicit order of execution](https://terramate.io/docs/cli/stacks/configuration#explicit-order-of-execution)
 
-## Orchestration Basics
+### Orchestration Basics
 
 When running commands such as `terramate run`, Terramate creates a DAG of stack that can be filted with e.g. change detection or tags.
 
@@ -85,15 +136,18 @@ When running commands such as `terramate run`, Terramate creates a DAG of stack 
 - Understand what stacks contain changes in the current PR, branch or range of commits `terramate list --changed`
 - Run commands in the DAG of stacks using `terramate run -- <CMD>`
 
-## Outputs Examples
+## Example: 01_example_outputs Using Terraform and outputs sharing via code generation
 
 In `example_outputs/`, we are using Terramate code generation to generate output dependencies among stacks using the [outputs sharing feature](https://terramate.io/docs/cli/orchestration/outputs-sharing#setup-outputs-sharing-backends) in the CLI.
 This will generate `outputs` and `variables` allowing users to stay in a native environment.
 
+- Run `terramate generate` to run all code generation (variables and outputs in this example, I checked those in to the repository already)
 - Run `terramate run -X -- terraform init` to download dependencies
 - Run a plan in all stacks with enabled output sharing and mocking
   ```sh
-  terramate run -X \
+  terramate run \
+    -X \
+    -C 01_example_outputs \
     --enable-sharing \
     --mock-on-fail \
     -- \
@@ -103,6 +157,9 @@ This will generate `outputs` and `variables` allowing users to stay in a native 
   ```sh
   terramate run \
     -X \
+    -C 01_example_outputs \
+    --enable-sharing \
+    --mock-on-fail \
     --sync-deployment \
     --terraform-plan-file=out.tfplan \
     -- \
@@ -117,6 +174,7 @@ This will make the deployment observability for all stacks available at https://
   ```sh
   terramate run \
    -X \
+   -C 01_example_outputs \
    --enable-sharing \
    --mock-on-fail \
    --sync-drift-status \
@@ -140,6 +198,7 @@ This works because Terramate CLI is syncing [sanitized plans](https://terramate.
   ```sh
   terramate run \
     -X \
+    -C 01_example_outputs \
     --reverse \
     --enable-sharing \
     --mock-on-fail \
@@ -147,4 +206,53 @@ This works because Terramate CLI is syncing [sanitized plans](https://terramate.
     terraform destroy -auto-approve
   ```
 
-## Data Sources Example
+## Example: 02_example_data_sources Using OpenTofu and data sources and implicit order of executing (by sorting using the file tree hierachy / nesting)
+
+Hierarchy (nested, implicit ordering):
+
+```sh
+network/
+  aks/
+    fllux/
+#    fllux2/ # if we would have N stacks on the same level they could execute in parallel
+```
+
+
+- no `before` and `after` required because stacks are nested
+- See run order with `terramate list --run-order`
+- Install all dependencies `terramate run -X -C 02_example_data_sources -- tofu init`
+
+- Create a plan in all stacks
+  ```sh
+  terramate run \
+    -X \
+    -C 02_example_data_sources \
+    -- \
+    tofu plan -out out.tfplan
+  ```
+
+- Deploy the infrastructure sequentially (network -> aks -> flux)
+  ```sh
+  terramate run \
+    -X \
+    -C 02_example_data_sources \
+    --sync-deployment \
+    --tofu-plan-file=out.tfplan \
+    -- \
+    tofu apply -input=false -auto-approve -lock-timeout=5m out.tfplan
+  ```
+
+# Worklows
+
+In `.github`
+- Preview workflows (sync PR previews to the cloud)
+- Deployment workflows
+- drift detection and reconciliation workflows
+  
+# GitHub App
+
+Install to have better plan previews in PRs
+
+# Slack App
+
+Install in your Slack workspace to make the Terramate Bot available (in case of incidents via alerts in Terramate Cloud).

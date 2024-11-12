@@ -5,12 +5,31 @@ provider "azurerm" {
 resource "azurerm_resource_group" "main" {
   name     = "${var.environment}-aks-env-out"
   location = var.location
+
 }
 
 resource "random_id" "name" {
   byte_length = 8
 }
 
+# data "azurerm_virtual_network" "network" {
+#   name                = "${var.environment}-env-out"
+#   resource_group_name = "${var.environment}-env-out"
+
+#   depends_on = [null_resource.deployment_trigger]
+# }
+
+data "terraform_remote_state" "vpc" {
+  backend = "local"
+
+  config = {
+    path = "../terraform.tfstate"
+  }
+  
+  depends_on = [null_resource.deployment_trigger]
+}
+
+resource "null_resource" "deployment_trigger" {}
 
 module "cluster" {
   source  = "Azure/aks/azurerm"
@@ -18,7 +37,7 @@ module "cluster" {
 
   # Cluster base config
   resource_group_name     = azurerm_resource_group.main.name
-  prefix                  = random_id.name.hex
+  prefix                  = "dev2-aks-cluster"
   sku_tier                = "Standard"
   node_os_channel_upgrade = "NodeImage"
 
@@ -29,7 +48,8 @@ module "cluster" {
   agents_min_count          = 3
 
   # Cluster networking
-  vnet_subnet_id = var.vnet_subnet_id
+  # vnet_subnet_id = var.vnet_subnet_id
+  vnet_subnet_id = data.terraform_remote_state.vpc.outputs.aks_subnet_id
   network_plugin = "azure"
 
   # Cluster node pools
@@ -40,8 +60,9 @@ module "cluster" {
       enable_auto_scaling = true
       max_count           = 4
       min_count           = 1
-      vnet_subnet_id      = var.vnet_subnet_id
-      zones               = [1, 2, 3]
+      # vnet_subnet_id      = var.vnet_subnet_id
+      vnet_subnet_id = data.terraform_remote_state.vpc.outputs.aks_subnet_id
+      zones          = [1, 2, 3]
     }
   }
 
