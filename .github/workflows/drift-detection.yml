@@ -46,7 +46,6 @@ jobs:
       ### Configure cloud credentials
       
       - name: 'Configure Azure credentials'
-        if: steps.list-changed.outputs.stdout
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -54,7 +53,6 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Verify Azure credentials
-        if: steps.list-changed.outputs.stdout
         run: |
           az account show
 
