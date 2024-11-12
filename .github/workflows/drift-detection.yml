@@ -60,9 +60,10 @@ jobs:
 
       - name: Run Terraform init in all stacks
         run: |
-          terramate script run \
-            --parallel 1 \
-            init
+          terramate run -- terraform init
+        # terramate script run \
+        #   --parallel 1 \
+        #   init
         env:
           GITHUB_TOKEN: ${{ github.token }}
           ARM_USE_OIDC: true
@@ -73,13 +74,20 @@ jobs:
       - name: Run drift detection
         id: drift-detect
         run: |
-          terramate script run \
-            --enable-sharing \
-            --mock-on-fail \
-            --parallel 5 \
+          terramate run \
+            --sync-drift-status \
+            --terraform-plan-file=drift.tfplan \
             --continue-on-error \
+            --parallel 5 \
             -- \
-            drift detect
+            terraform plan -out drift.tfplan -detailed-exitcode -lock=false
+        # terramate script run \
+        # --enable-sharing \
+        # --mock-on-fail \
+        # --parallel 5 \
+        # --continue-on-error \
+        # -- \
+        # drift detect
         env:
           GITHUB_TOKEN: ${{ github.token }}
           ARM_USE_OIDC: true
@@ -87,21 +95,21 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Run drift reconciliation
-        id: drift-reconcile
-        run: |
-          terramate script run \
-            --enable-sharing \
-            --mock-on-fail \
-            --tags reconcile \
-            --status=drifted \
-            --parallel 5 \
-            --continue-on-error \
-            -- \
-            drift reconcile
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          ARM_USE_OIDC: true
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # - name: Run drift reconciliation
+      #   id: drift-reconcile
+      #   run: |
+      #     terramate script run \
+      #       --enable-sharing \
+      #       --mock-on-fail \
+      #       --tags reconcile \
+      #       --status=drifted \
+      #       --parallel 5 \
+      #       --continue-on-error \
+      #       -- \
+      #       drift reconcile
+      #   env:
+      #     GITHUB_TOKEN: ${{ github.token }}
+      #     ARM_USE_OIDC: true
+      #     ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      #     ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      #     ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}

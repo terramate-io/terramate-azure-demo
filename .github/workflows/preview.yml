@@ -56,15 +56,15 @@ jobs:
 
       ### Configure cloud credentials
 
-      - name: 'Configure Azure credentials'
+      - name: 'configure azure credentials'
         if: steps.list-changed.outputs.stdout
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ secrets.azure_client_id }}
+          tenant-id: ${{ secrets.azure_tenant_id }}
+          subscription-id: ${{ secrets.azure_subscription_id }}
 
-      - name: Verify Azure credentials
+      - name: verify azure credentials
         if: steps.list-changed.outputs.stdout
         run: |
           az account show
@@ -74,10 +74,11 @@ jobs:
       - name: Run Terraform init in all changed stacks
         if: steps.list-changed.outputs.stdout
         run: |
-          terramate script run \
-            --changed \
-            --parallel 1 \
-            init
+          terramate run -- terraform init
+        # terramate script run \
+        #   --changed \
+        #   --parallel 1 \
+        #   init
         env:
           GITHUB_TOKEN: ${{ github.token }}
           ARM_USE_OIDC: true
@@ -88,14 +89,22 @@ jobs:
       - name: Plan Terraform changes in changed stacks
         if: steps.list-changed.outputs.stdout
         run: |
-          terramate script run \
-            --enable-sharing \
-            --mock-on-fail \
-            --changed \
+          terramate run \
             --parallel 5 \
+            --changed \
+            --sync-preview \
+            --terraform-plan-file=out.tfplan \
             --continue-on-error \
             -- \
-            preview
+            terraform plan -out out.tfplan -detailed-exitcode -lock=false
+        # terramate script run \
+        # --enable-sharing \
+        # --mock-on-fail \
+        # --changed \
+        # --parallel 5 \
+        # --continue-on-error \
+        # -- \
+        # preview
         env:
           GITHUB_TOKEN: ${{ github.token }}
           ARM_USE_OIDC: true
