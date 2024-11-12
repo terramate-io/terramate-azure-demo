@@ -25,7 +25,7 @@ data "terraform_remote_state" "vpc" {
   config = {
     path = "../terraform.tfstate"
   }
-  
+
   depends_on = [null_resource.deployment_trigger]
 }
 
