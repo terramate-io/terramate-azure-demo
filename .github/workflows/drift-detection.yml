@@ -75,6 +75,8 @@ jobs:
         id: drift-detect
         run: |
           terramate run \
+            --enable-sharing \
+            --mock-on-fail \
             --sync-drift-status \
             --terraform-plan-file=drift.tfplan \
             --continue-on-error \

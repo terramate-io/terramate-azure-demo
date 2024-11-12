@@ -90,6 +90,8 @@ jobs:
         if: steps.list-changed.outputs.stdout
         run: |
           terramate run \
+            --enable-sharing \
+            --mock-on-fail \
             --parallel 5 \
             --changed \
             --sync-preview \

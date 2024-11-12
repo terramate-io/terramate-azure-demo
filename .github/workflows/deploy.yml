@@ -101,6 +101,8 @@ jobs:
         if: steps.list-changed.outputs.stdout
         run: |
           terramate run \
+            --enable-sharing \
+            --mock-on-fail \
             --changed \
             --sync-deployment \
             --terraform-plan-file=out.tfplan \
@@ -133,6 +135,8 @@ jobs:
         if: steps.list-changed.outputs.stdout && ! cancelled() && steps.deploy.outcome != 'skipped'
         run: |
           terramate run \
+            --enable-sharing \
+            --mock-on-fail \
             --changed \
             --sync-drift-status \
             --terraform-plan-file=drift.tfplan \
