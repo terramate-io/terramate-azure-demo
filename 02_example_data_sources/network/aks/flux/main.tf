@@ -1,4 +1,5 @@
 provider "azurerm" {
+  skip_provider_registration = false
   features {}
 }
 
@@ -8,7 +9,7 @@ data "terraform_remote_state" "cluster" {
   config = {
     path = "../terraform.tfstate"
   }
-  
+
   depends_on = [null_resource.deployment_trigger]
 }
 
