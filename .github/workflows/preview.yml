@@ -90,6 +90,7 @@ jobs:
         run: |
           terramate script run \
           --changed \
+          --parallel 5 \
           --continue-on-error \
           -- \
           preview
