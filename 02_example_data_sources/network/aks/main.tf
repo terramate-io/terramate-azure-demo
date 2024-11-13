@@ -20,17 +20,16 @@ resource "random_id" "name" {
 #   depends_on = [null_resource.deployment_trigger]
 # }
 
-data "terraform_remote_state" "vpc" {
-  backend = "local"
+# data "terraform_remote_state" "vpc" {
+#   backend = "local"
 
-  config = {
-    path = "../terraform.tfstate"
-  }
+#   config = {
+#     path = "../terraform.tfstate"
+#   }
 
-  depends_on = [null_resource.deployment_trigger]
-}
+#   depends_on = [null_resource.deployment_trigger]
+# }
 
-resource "null_resource" "deployment_trigger" {}
 
 module "cluster" {
   source  = "Azure/aks/azurerm"

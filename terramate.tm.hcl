@@ -29,10 +29,11 @@ terramate {
       }
     }
 
-    # Enable Terramate Scripts
+    # Enable Features
     experiments = [
       "scripts",
       "outputs-sharing",
+      "tmgen"
     ]
   }
 }
