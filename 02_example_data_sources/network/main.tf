@@ -3,7 +3,7 @@ provider "azurerm" {
   features {}
 }
 
-resource "azurerm_resource_group" "main" {
+resource "azurerm_resource_group" "main2" {
   name     = "${var.environment}-env-out"
   location = var.location
 }
