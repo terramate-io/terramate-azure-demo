@@ -1,0 +1,2 @@
+*.tm linguist-language=HCL
+*.tmgen linguist-language=HCL
