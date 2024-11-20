@@ -2,9 +2,9 @@ data "terraform_remote_state" "cluster" {
   backend = "azurerm"
   config = {
     storage_account_name = global.terraform.backend.azurerm.storage_account_name
-        resource_group_name  = global.terraform.backend.azurerm.resource_group_name
+      resource_group_name  = global.terraform.backend.azurerm.resource_group_name
     container_name       = tm_try(global.terraform.backend.azurerm.container_name, "tfstate")
-    key                  = "terraform/stacks/by-id/${global.from_stack}/terraform.tfstate"
+    key                  = "terraform/stacks/by-id/${terramate.stack.parent.id}/terraform.tfstate"
   }
 
   depends_on = [null_resource.deployment_trigger]
