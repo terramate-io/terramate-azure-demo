@@ -15,7 +15,7 @@ terramate {
 
     # Configure the namespace of your Terramate Cloud organization
     cloud {
-      organization = "sm-azure-demo"
+      organization = "terramate"
     }
 
     git {
