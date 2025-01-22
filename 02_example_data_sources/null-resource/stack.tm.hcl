@@ -1,5 +1,5 @@
 stack {
   name        = "null-resource"
-  description = "This is a demo stack"
-  id          = "6cd8de5b-fea2-4e77-ab56-f42c5274eca7"
+  description = "null-resource"
+  id          = "707e97c6-a255-4ac6-8291-1c84e3b69b05"
 }
