@@ -21,3 +21,6 @@ module "network" {
   subnet_names    = keys(var.subnet_prefixes)
   subnet_prefixes = values(var.subnet_prefixes)
 }
+
+resource "null_resource" "example" {
+}
