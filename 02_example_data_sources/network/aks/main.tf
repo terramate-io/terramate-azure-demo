@@ -6,7 +6,6 @@ provider "azurerm" {
 resource "azurerm_resource_group" "main" {
   name     = "${var.environment}-aks-env-out"
   location = var.location
-
 }
 
 resource "random_id" "name" {
@@ -73,3 +72,5 @@ module "cluster" {
   depends_on = [azurerm_resource_group.main]
 }
 
+resource "null_resource" "example" {
+}
