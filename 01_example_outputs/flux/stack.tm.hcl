@@ -6,6 +6,11 @@ stack {
   after = ["../network", "../aks"]
 }
 
+globals "terraform" "providers" "helm" {
+  source   = "hashicorp/helm"
+  version  = "~> 2.17"
+}
+
 # Generated Inputs for this stack
 
 globals {
