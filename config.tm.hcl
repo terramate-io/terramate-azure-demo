@@ -7,8 +7,6 @@
 # }
 
 globals "terraform" "providers" "azurerm" {
-  enabled = true
-
   source   = "hashicorp/azurerm"
   version  = "~> 3.0"
   features = {}
