@@ -5,6 +5,6 @@ stack {
 }
 
 globals "terraform" "providers" "helm" {
-  source   = "hashicorp/helm"
-  version  = "~> 2.17"
+  source  = "hashicorp/helm"
+  version = "~> 2.17"
 }
