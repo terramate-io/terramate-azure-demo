@@ -10,6 +10,9 @@ globals "terraform" "providers" "azurerm" {
   source   = "hashicorp/azurerm"
   version  = "~> 3.0"
   features = {}
+  config = {
+    skip_provider_registration = false
+  }
 }
 
 globals "terraform" "backend" "azurerm" {
