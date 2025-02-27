@@ -1,7 +1,7 @@
 // TERRAMATE: GENERATED AUTOMATICALLY DO NOT EDIT
 
 terraform {
-  required_version = "~> 1.8"
+  required_version = "1.9.0"
 }
 terraform {
   required_providers {
@@ -13,5 +13,10 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.17"
     }
+  }
+}
+provider "azurerm" {
+  skip_provider_registration = false
+  features {
   }
 }

@@ -1,15 +1,10 @@
-# globals "tofu" {
-#   version = "1.8.5"
-# }
-
-# globals "terraform" {
-#   version = "1.9.8"
-# }
-
 globals "terraform" "providers" "azurerm" {
   source   = "hashicorp/azurerm"
   version  = "~> 3.0"
   features = {}
+  config = {
+    skip_provider_registration = false
+  }
 }
 
 globals "terraform" "backend" "azurerm" {

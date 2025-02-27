@@ -1,7 +1,7 @@
 // TERRAMATE: GENERATED AUTOMATICALLY DO NOT EDIT
 
 terraform {
-  required_version = "~> 1.8"
+  required_version = "1.10.5"
 }
 terraform {
   required_providers {
@@ -9,5 +9,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.0"
     }
+  }
+}
+provider "azurerm" {
+  skip_provider_registration = false
+  features {
   }
 }

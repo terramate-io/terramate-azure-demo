@@ -1,8 +1,3 @@
-provider "azurerm" {
-  skip_provider_registration = false
-  features {}
-}
-
 provider "helm" {
   kubernetes {
     host                   = "https://${data.terraform_remote_state.cluster.outputs.host}"
@@ -18,5 +13,4 @@ resource "helm_release" "flux" {
   name             = "flux2"
   namespace        = "flux-system"
   create_namespace = true
-
 }
