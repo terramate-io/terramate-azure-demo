@@ -1,35 +1,11 @@
-provider "azurerm" {
-  skip_provider_registration = false
-  features {}
-}
-
 resource "azurerm_resource_group" "main" {
   name     = "${var.environment}-aks-env-out"
   location = var.location
-
 }
 
 resource "random_id" "name" {
   byte_length = 8
 }
-
-# data "azurerm_virtual_network" "network" {
-#   name                = "${var.environment}-env-out"
-#   resource_group_name = "${var.environment}-env-out"
-
-#   depends_on = [null_resource.deployment_trigger]
-# }
-
-# data "terraform_remote_state" "vpc" {
-#   backend = "local"
-
-#   config = {
-#     path = "../terraform.tfstate"
-#   }
-
-#   depends_on = [null_resource.deployment_trigger]
-# }
-
 
 module "cluster" {
   source  = "Azure/aks/azurerm"
@@ -72,4 +48,3 @@ module "cluster" {
 
   depends_on = [azurerm_resource_group.main]
 }
-

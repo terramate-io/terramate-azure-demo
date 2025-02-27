@@ -1,8 +1,3 @@
-provider "azurerm" {
-  skip_provider_registration = false
-  features {}
-}
-
 resource "azurerm_resource_group" "main" {
   name     = "${var.environment}-aks-env-out"
   location = var.location
