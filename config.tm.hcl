@@ -1,10 +1,6 @@
-# globals "tofu" {
-#   version = "1.8.5"
-# }
-
-# globals "terraform" {
-#   version = "1.9.8"
-# }
+globals "terraform" {
+  version = "1.11.0"
+}
 
 globals "terraform" "providers" "azurerm" {
   source   = "hashicorp/azurerm"
