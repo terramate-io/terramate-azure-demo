@@ -1,6 +1,6 @@
 # terramate.tm.hcl
 terramate {
-  required_version = ">= 0.11.2"
+  required_version = ">= 0.12.0"
   # required_version_allow_prereleases = true
   config {
 
