@@ -1,5 +1,5 @@
 globals "terraform" {
-  version = "1.11.0"
+  version = "1.10.5"
 }
 
 globals "terraform" "providers" "azurerm" {
